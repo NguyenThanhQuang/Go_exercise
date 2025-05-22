@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"social_media_server/models"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -21,10 +22,10 @@ func ConnectDatabase() {
 		log.Fatal("Failed to connect to DB:", err)
 	}
 
-	// err = db.AutoMigrate(&models.Post{}, &models.Comment{})
-	// if err != nil {
-	// 	log.Fatal("Migration failed:", err)
-	// }
+	err = db.AutoMigrate(&models.Post{}, &models.Comment{})
+	if err != nil {
+		log.Fatal("Migration failed:", err)
+	}
 
 	DB = db
 	fmt.Println("Database connected and migrated")

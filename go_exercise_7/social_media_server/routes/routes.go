@@ -20,6 +20,8 @@ func SetupRouter() *gin.Engine {
 
 	r.GET("/comments", commentCtl.GetComments)
 	r.POST("/comments", commentCtl.CreateComment)
+	r.PUT("/comments/:id", commentCtl.UpdateComment)
+	r.DELETE("/comments/:id", commentCtl.DeleteComment)
 
 	return r
 }
