@@ -12,7 +12,7 @@ import (
 
 var (
 	RDB *redis.Client    
-	Ctx = context.Background()
+	Ctx = context.Background() 
 )
 
 func ConnectRedis() {
@@ -21,7 +21,7 @@ func ConnectRedis() {
 		log.Println("REDIS_ADDR not set in .env, using default:", redisAddr)
 	}
 
-	redisPassword := os.Getenv("REDIS_PASSWORD") 
+	redisPassword := os.Getenv("REDIS_PASSWORD")
 
 	redisDBStr := os.Getenv("REDIS_DB")
 	redisDB, err := strconv.Atoi(redisDBStr)

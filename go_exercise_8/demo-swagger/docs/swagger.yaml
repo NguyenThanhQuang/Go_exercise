@@ -1,0 +1,26 @@
+basePath: /api/v1
+host: localhost:8080
+info:
+  contact: {}
+  description: Đây là ví dụ Swagger dùng Gin
+  title: Demo Swagger API
+  version: "1.0"
+paths:
+  /hello:
+    get:
+      consumes:
+      - application/json
+      description: Trả về câu chào
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Chào mừng đến với Swagger
+      tags:
+      - example
+swagger: "2.0"
