@@ -4,14 +4,12 @@ import (
 	"log"
 	"os"
 	"social_media_server/config"
-
+	_ "social_media_server/docs"
 	"social_media_server/routes"
 
 	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-
-	_ "social_media_server/docs" // This is for Swagger documentation
 )
 
 // @title Social Media API
@@ -39,9 +37,9 @@ func main() {
 	}
 
 	config.ConnectDB()
-	// config.ConnectRedis()
+	// config.ConnectRedis() 
 
-	router := routes.SetupRouter() 
+	router := routes.SetupRouter()
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
@@ -51,7 +49,7 @@ func main() {
 	}
 
 	log.Printf("Server starting on port %s", port)
-	log.Printf("Swagger UI available at http://localhost:%s/swagger/index.html", port) 
+	log.Printf("Swagger UI available at http://localhost:%s/swagger/index.html", port)
 	if err := router.Run(":" + port); err != nil {
 		log.Fatal("Failed to run server:", err)
 	}

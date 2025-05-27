@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"errors"
-	"log"
 	"net/http"
 	"social_media_server/config"
 	"social_media_server/models"
@@ -60,13 +59,6 @@ func (cc *CommentController) CreateComment(c *gin.Context) {
 		return
 	}
 
-	postCacheKey := postCacheKeyPrefix + strconv.FormatUint(uint64(comment.PostID), 10)
-	if errs := config.RDB.Del(config.Ctx, allPostsCacheKey, postCacheKey).Err(); errs != nil {
-		log.Printf("Error deleting cache after creating comment for post ID %d: %v\n", comment.PostID, errs)
-	} else {
-		log.Printf("Cache for all_posts and post ID %d invalidated after creating comment\n", comment.PostID)
-	}
-
 	c.JSON(http.StatusCreated, comment)
 }
 
@@ -100,7 +92,7 @@ func (cc *CommentController) UpdateComment(c *gin.Context) {
 		return
 	}
 
-	var commentUpdates models.Comment 
+	var commentUpdates models.Comment
 	if err := c.ShouldBindJSON(&commentUpdates); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -111,21 +103,12 @@ func (cc *CommentController) UpdateComment(c *gin.Context) {
 		return
 	}
 
-	originalPostID := comment.PostID
 	comment.Content = commentUpdates.Content
 
 	if err := config.DB.Save(&comment).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update comment"})
 		return
 	}
-
-	postCacheKey := postCacheKeyPrefix + strconv.FormatUint(uint64(originalPostID), 10)
-	if errs := config.RDB.Del(config.Ctx, allPostsCacheKey, postCacheKey).Err(); errs != nil {
-		log.Printf("Error deleting cache after updating comment ID %d (post ID %d): %v\n", id, originalPostID, errs)
-	} else {
-		log.Printf("Cache for all_posts and post ID %d invalidated after updating comment ID %d\n", originalPostID, id)
-	}
-
 	c.JSON(http.StatusOK, comment)
 }
 
@@ -157,24 +140,10 @@ func (cc *CommentController) DeleteComment(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve comment for deletion"})
 		return
 	}
-	originalPostID := comment.PostID 
 
 	if err := config.DB.Delete(&models.Comment{}, uint(id)).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete comment"})
 		return
 	}
-
-	postCacheKey := postCacheKeyPrefix + strconv.FormatUint(uint64(originalPostID), 10)
-	if errs := config.RDB.Del(config.Ctx, allPostsCacheKey, postCacheKey).Err(); errs != nil {
-		log.Printf("Error deleting cache after deleting comment ID %d (post ID %d): %v\n", id, originalPostID, errs)
-	} else {
-		log.Printf("Cache for all_posts and post ID %d invalidated after deleting comment ID %d\n", originalPostID, id)
-	}
-
 	c.JSON(http.StatusOK, gin.H{"message": "Comment deleted successfully"})
 }
-
-const (
-	allPostsCacheKey = "all_posts"
-	postCacheKeyPrefix = "post:"
-)
